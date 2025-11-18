@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地面站简易科学计算器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="nav">
+    <button class="nav-item active" data-target="calc-basic">简易计算器</button>
+    <button class="nav-item" data-target="calc-triangle">三角形计算器</button>
+    <button class="nav-item" data-target="calc-bearing">航向角计算器</button>
+    <button class="nav-item" data-target="calc-geo">任意两点间航向和距离计算器</button>
+    <button class="nav-item" data-target="calc-speed">速度单位换算</button>
+  </aside>
+  <main class="content">
+    <section id="calc-basic" class="view active">
+      <div class="display">
+        <div id="basic-expr" class="expr"></div>
+        <div id="basic-display" class="value">0</div>
+      </div>
+      <div class="keypad">
+        <button data-action="clear">C</button>
+        <button data-action="back">⌫</button>
+        <button data-action="sqrt">√x</button>
+        <button data-action="square">x²</button>
+        <button data-digit="7">7</button>
+        <button data-digit="8">8</button>
+        <button data-digit="9">9</button>
+        <button data-op="/">÷</button>
+        <button data-digit="4">4</button>
+        <button data-digit="5">5</button>
+        <button data-digit="6">6</button>
+        <button data-op="*">×</button>
+        <button data-digit="1">1</button>
+        <button data-digit="2">2</button>
+        <button data-digit="3">3</button>
+        <button data-op="-">−</button>
+        <button data-digit="0" class="span-2">0</button>
+        <button data-digit=".">.</button>
+        <button data-op="+">+</button>
+        <button data-action="equals" class="equals">=</button>
+      </div>
+    </section>
+
+    <section id="calc-triangle" class="view">
+      <div class="form">
+        <label>角A(°)<input type="number" id="tri-A" step="0.000001"></label>
+        <label>角B(°)<input type="number" id="tri-B" step="0.000001"></label>
+        <label>已知边长<input type="number" id="tri-known-side" step="0.000001"></label>
+        <div class="radio-group">
+          <label><input type="radio" name="tri-known" value="a" checked> 对应角A的边a</label>
+          <label><input type="radio" name="tri-known" value="b"> 对应角B的边b</label>
+          <label><input type="radio" name="tri-known" value="c"> 对应角C的边c</label>
+        </div>
+        <button id="tri-calc">计算</button>
+      </div>
+      <div class="result">
+        <div>角C(°)：<span id="tri-C">-</span></div>
+        <div>边a：<span id="tri-a">-</span></div>
+        <div>边b：<span id="tri-b">-</span></div>
+        <div>边c：<span id="tri-c">-</span></div>
+      </div>
+    </section>
+
+    <section id="calc-bearing" class="view">
+      <div class="form">
+        <label>A→B航向角(°)<input type="number" id="bearing-ab" step="0.000001"></label>
+        <button id="bearing-calc">计算</button>
+      </div>
+      <div class="result">B→A航向角(°)：<span id="bearing-ba">-</span></div>
+    </section>
+
+    <section id="calc-geo" class="view">
+      <div class="form grid-2">
+        <div>
+          <h4>A点</h4>
+          <label>纬度(°)<input type="number" id="geo-lat1" step="0.000001"></label>
+          <label>经度(°)<input type="number" id="geo-lon1" step="0.000001"></label>
+        </div>
+        <div>
+          <h4>B点</h4>
+          <label>纬度(°)<input type="number" id="geo-lat2" step="0.000001"></label>
+          <label>经度(°)<input type="number" id="geo-lon2" step="0.000001"></label>
+        </div>
+      </div>
+      <div class="form"><button id="geo-calc">计算</button></div>
+      <div class="result">
+        <div>距离(m)：<span id="geo-dist">-</span></div>
+        <div>A→B航向角(°)：<span id="geo-bearing-ab">-</span></div>
+        <div>B→A航向角(°)：<span id="geo-bearing-ba">-</span></div>
+      </div>
+    </section>
+
+    <section id="calc-speed" class="view">
+      <div class="form">
+        <label>速度值<input type="number" id="speed-value" step="0.000001"></label>
+        <label>输入单位
+          <select id="speed-unit">
+            <option value="kmh">公里/小时</option>
+            <option value="kmh2">千米/小时</option>
+            <option value="ms">米/秒</option>
+            <option value="kmmin">千米/分钟</option>
+            <option value="mmin">米/分钟</option>
+          </select>
+        </label>
+        <button id="speed-calc">换算</button>
+      </div>
+      <div class="result">
+        <div>公里/小时：<span id="out-kmh">-</span></div>
+        <div>米/秒：<span id="out-ms">-</span></div>
+        <div>千米/分钟：<span id="out-kmmin">-</span></div>
+        <div>米/分钟：<span id="out-mmin">-</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
