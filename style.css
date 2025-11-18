@@ -35,3 +35,4 @@ body{margin:0;background:linear-gradient(180deg,#ebfbfb 0%,#e6f7f7 100%);color:v
 .grid-2 h4{margin:0 0 6px;color:var(--muted)}
 @media (max-width:800px){.app{height:auto}.nav{width:200px}.view{width:100%}}
 .footer{max-width:800px;margin:8px auto 24px auto;text-align:center;color:#0b6e6f;font-weight:600}
+.topbar{max-width:800px;margin:12px auto;text-align:center;color:#0b6e6f;font-weight:600}
