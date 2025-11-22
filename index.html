@@ -47,22 +47,59 @@
     </section>
 
     <section id="calc-triangle" class="view">
-      <div class="form">
+      <div class="tabbar">
+        <button class="tab active" data-tri-tab="asa">已知两角一边</button>
+        <button class="tab" data-tri-tab="sas">两边及夹角</button>
+        <button class="tab" data-tri-tab="sss">已知三边解角</button>
+      </div>
+      <div id="tri-form-asa" class="form">
         <label>角A(°)<input type="number" id="tri-A" step="0.000001"></label>
         <label>角B(°)<input type="number" id="tri-B" step="0.000001"></label>
         <label>已知边长<input type="number" id="tri-known-side" step="0.000001"></label>
         <div class="radio-group">
-          <label><input type="radio" name="tri-known" value="a" checked> 对应角A的边a</label>
-          <label><input type="radio" name="tri-known" value="b"> 对应角B的边b</label>
-          <label><input type="radio" name="tri-known" value="c"> 对应角C的边c</label>
+          <label>
+            <input type="radio" name="tri-known" value="a" checked>
+            <span class="label-text"><span>已知边长</span><span>对应角A</span></span>
+          </label>
+          <label>
+            <input type="radio" name="tri-known" value="b">
+            <span class="label-text"><span>已知边长</span><span>对应角B</span></span>
+          </label>
+          <label>
+            <input type="radio" name="tri-known" value="c">
+            <span class="label-text"><span>已知边长</span><span>对应角C</span></span>
+          </label>
         </div>
-        <button id="tri-calc">计算</button>
+        <button id="tri-asa-calc">计算</button>
       </div>
-      <div class="result">
-        <div>角C(°)：<span id="tri-C">-</span></div>
-        <div>边a：<span id="tri-a">-</span></div>
-        <div>边b：<span id="tri-b">-</span></div>
-        <div>边c：<span id="tri-c">-</span></div>
+      <div id="tri-form-sas" class="form" style="display:none">
+        <label>夹角(°)<input type="number" id="tri-sas-angle" step="0.000001"></label>
+        <div class="radio-group">
+          <label><input type="radio" name="tri-sas-angle-name" value="A" checked> 角A</label>
+          <label><input type="radio" name="tri-sas-angle-name" value="B"> 角B</label>
+          <label><input type="radio" name="tri-sas-angle-name" value="C"> 角C</label>
+        </div>
+        <label>边1<input type="number" id="tri-sas-side1" step="0.000001"></label>
+        <label>边2<input type="number" id="tri-sas-side2" step="0.000001"></label>
+        <button id="tri-sas-calc">计算</button>
+      </div>
+      <div id="tri-form-sss" class="form" style="display:none">
+        <label>边a<input type="number" id="tri-sss-a" step="0.000001"></label>
+        <label>边b<input type="number" id="tri-sss-b" step="0.000001"></label>
+        <label>边c<input type="number" id="tri-sss-c" step="0.000001"></label>
+        <button id="tri-sss-calc">计算</button>
+      </div>
+      <div class="result grid-2">
+        <div>
+          <div>角A(°)：<span id="tri-out-A">-</span></div>
+          <div>角B(°)：<span id="tri-out-B">-</span></div>
+          <div>角C(°)：<span id="tri-C">-</span></div>
+        </div>
+        <div>
+          <div>边a：<span id="tri-a">-</span></div>
+          <div>边b：<span id="tri-b">-</span></div>
+          <div>边c：<span id="tri-c">-</span></div>
+        </div>
       </div>
     </section>
 

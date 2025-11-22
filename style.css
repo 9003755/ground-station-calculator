@@ -29,6 +29,9 @@ body{margin:0;background:linear-gradient(180deg,#ebfbfb 0%,#e6f7f7 100%);color:v
 .form input,.form select{height:40px;border:1px solid var(--border);border-radius:10px;padding:0 10px;background:linear-gradient(#fbffff,#eefafa)}
 .form button{height:40px;border:1px solid var(--accent);border-radius:10px;background:linear-gradient(#13b8b9,#0ea5a6);color:#fff;cursor:pointer;box-shadow:0 3px 0 #0c8e8f}
 .radio-group{display:flex;gap:10px}
+.radio-group label{display:grid;grid-template-columns:auto 1fr;align-items:flex-start;gap:8px}
+.radio-group label input{margin-top:2px}
+.radio-group .label-text span{display:block}
 .result{border-top:1px dashed var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px}
 .result span{font-weight:700;color:var(--accent);font-size:18px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -36,3 +39,8 @@ body{margin:0;background:linear-gradient(180deg,#ebfbfb 0%,#e6f7f7 100%);color:v
 @media (max-width:800px){.app{height:auto}.nav{width:200px}.view{width:100%}}
 .footer{max-width:800px;margin:8px auto 24px auto;text-align:center;color:#0b6e6f;font-weight:600}
 .topbar{max-width:800px;margin:12px auto;text-align:center;color:#0b6e6f;font-weight:600}
+.tabbar{display:flex;gap:8px;margin-bottom:12px}
+.tabbar .tab{padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:linear-gradient(#fbffff,#eaf9f9);cursor:pointer;box-shadow:0 2px 0 #b8d6d8}
+.tabbar .tab:hover{background:linear-gradient(#ffffff,#e2f5f5)}
+.tabbar .tab.active{border-color:var(--accent);color:#0b6e6f;background:linear-gradient(#e2f5f5,#d9f2f2);box-shadow:0 2px 0 #8ec6c8}
+.result.grid-2{gap:16px}
