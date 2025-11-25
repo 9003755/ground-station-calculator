@@ -51,7 +51,7 @@ geoBtn.addEventListener('click',()=>{const lat1=parseFloat(document.getElementBy
 const geoClr=document.getElementById('geo-clear');
 if(geoClr){geoClr.addEventListener('click',()=>{document.getElementById('geo-lat1').value='';document.getElementById('geo-lon1').value='';document.getElementById('geo-lat2').value='';document.getElementById('geo-lon2').value='';})}
 function distanceMeters(lat1,lon1,lat2,lon2){const R=6371000;const r1=deg2rad(lat1),r2=deg2rad(lat2);const dlat=deg2rad(lat2-lat1),dlon=deg2rad(lon2-lon1);const a=Math.sin(dlat/2)**2+Math.cos(r1)*Math.cos(r2)*Math.sin(dlon/2)**2;const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c}
-function bearingAB(lat1,lon1,lat2,lon2){const r1=deg2rad(lat1),r2=deg2rad(lat2);const dlon=deg2rad(lon2-lon1);const y=Math.sin(dlon)*Math.cos(r2);const x=Math.cos(r1)*Math.sin(r2)-Math.sin(r1)*Math.cos(r2)*Math.cos(dlon);let br=rad2deg(Math.atan2(y,x));br=(br%360+360)%360;return br}
+function bearingAB(lat1,lon1,lat2,lon2){const r1=deg2rad(lat1),r2=deg2rad(lat2);let dlon=deg2rad(lon2-lon1);const dpsi=Math.log(Math.tan(Math.PI/4+r2/2)/Math.tan(Math.PI/4+r1/2));if(Math.abs(dlon)>Math.PI)dlon=dlon>0?-(2*Math.PI-dlon):(2*Math.PI+dlon);let br=rad2deg(Math.atan2(dlon,dpsi));br=(br%360+360)%360;return br}
 
 const ocrArea=document.getElementById('ocr-area');
 const ocrOut=document.getElementById('ocr-output');
@@ -77,7 +77,12 @@ async function recognizeOnce(image, lang){return await Tesseract.recognize(image
 async function recognizeFromBlob(blob){if(!window.Tesseract){ocrOut.textContent='无法加载OCR';return}if(ocrBusy)return;ocrBusy=true;ocrOut.textContent='正在识别 0%';const scaled=await downscaleImage(blob);const url=URL.createObjectURL(scaled);const mkTimeout=(ms)=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms));try{let r=await Promise.race([recognizeOnce(url,'eng'),mkTimeout(25000)]);let txt=r&&r.data&&r.data.text?r.data.text:'';let pairs=parseTextToPairs(txt||'');if(!pairs||pairs.length===0){r=await Promise.race([recognizeOnce(url,'eng+chi_sim'),mkTimeout(25000)]);txt=r&&r.data&&r.data.text?r.data.text:'';pairs=parseTextToPairs(txt||'')}
 if(pairs&&pairs.length>0){ocrOut.textContent='识别完成';fillAB(pairs)}else{ocrOut.textContent=txt?txt:'未识别到经纬度'}
 }catch(e){ocrOut.textContent='识别失败或超时'}finally{ocrBusy=false;URL.revokeObjectURL(url)}}
-if(ocrArea){ocrArea.addEventListener('paste',e=>{const items=e.clipboardData&&e.clipboardData.items?e.clipboardData.items:[];let found=false;for(const it of items){if(it.type&&it.type.startsWith('image/')){const f=it.getAsFile();recognizeFromBlob(f);found=true;break}}if(!found){ocrOut.textContent='剪贴板中没有图片'}});
+const pasteDefault='在此处粘贴或拖拽图片，自动识别经纬度';
+const pasteFocus='按 Ctrl+V 粘贴截图';
+if(ocrArea){ocrArea.addEventListener('click',()=>{ocrArea.focus()});
+ocrArea.addEventListener('focus',()=>{ocrArea.classList.add('active');ocrArea.textContent=pasteFocus});
+ocrArea.addEventListener('blur',()=>{ocrArea.classList.remove('active');ocrArea.textContent=pasteDefault});
+ocrArea.addEventListener('paste',e=>{const items=e.clipboardData&&e.clipboardData.items?e.clipboardData.items:[];let found=false;for(const it of items){if(it.type&&it.type.startsWith('image/')){const f=it.getAsFile();recognizeFromBlob(f);found=true;break}}if(!found){ocrOut.textContent='剪贴板中没有图片'}});
 ocrArea.addEventListener('dragover',e=>{e.preventDefault();setDragState(true)});
 ocrArea.addEventListener('dragleave',()=>setDragState(false));
 ocrArea.addEventListener('drop',e=>{e.preventDefault();setDragState(false);const files=e.dataTransfer&&e.dataTransfer.files?e.dataTransfer.files:[];if(files.length>0){recognizeFromBlob(files[0])}})}

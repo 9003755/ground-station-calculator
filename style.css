@@ -59,6 +59,7 @@ body{margin:0;background:linear-gradient(180deg,#ebfbfb 0%,#e6f7f7 100%);color:v
 .tabbar .tab:hover{background:linear-gradient(#ffffff,#e2f5f5)}
 .tabbar .tab.active{border-color:var(--accent);color:#0b6e6f;background:linear-gradient(#e2f5f5,#d9f2f2);box-shadow:0 2px 0 #8ec6c8}
 .result.grid-2{gap:16px}
-.paste-area{border:2px dashed var(--border);border-radius:12px;min-height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#fbffff,#eefafa);color:var(--muted)}
+.paste-area{border:2px dashed var(--border);border-radius:12px;min-height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#fbffff,#eefafa);color:var(--muted);outline:none;transition:border-color .2s, box-shadow .2s, color .2s;cursor:text}
 .paste-area.drag{border-color:var(--accent);color:#0b6e6f}
+.paste-area.active{border-color:var(--accent);box-shadow:0 0 0 3px #93e5e6;color:#0b6e6f}
 .ocr-output{font-size:14px;color:var(--muted)}
