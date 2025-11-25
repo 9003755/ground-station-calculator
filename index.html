@@ -115,16 +115,23 @@
       <div class="form grid-2">
         <div>
           <h4>A点</h4>
-          <label>纬度(°)<input type="number" id="geo-lat1" step="0.000001"></label>
           <label>经度(°)<input type="number" id="geo-lon1" step="0.000001"></label>
+          <label>纬度(°)<input type="number" id="geo-lat1" step="0.000001"></label>
         </div>
         <div>
           <h4>B点</h4>
-          <label>纬度(°)<input type="number" id="geo-lat2" step="0.000001"></label>
           <label>经度(°)<input type="number" id="geo-lon2" step="0.000001"></label>
+          <label>纬度(°)<input type="number" id="geo-lat2" step="0.000001"></label>
         </div>
       </div>
-      <div class="form"><button id="geo-calc">计算</button></div>
+      <div class="form">
+        <div id="ocr-area" class="paste-area">在此处粘贴或拖拽图片，自动识别经纬度</div>
+        <div id="ocr-output" class="ocr-output"></div>
+      </div>
+      <div class="form">
+        <button id="geo-calc">计算</button>
+        <button id="geo-clear">刷新</button>
+      </div>
       <div class="result">
         <div>距离(m)：<span id="geo-dist">-</span></div>
         <div>A→B航向角(°)：<span id="geo-bearing-ab">-</span></div>
@@ -156,6 +163,24 @@
   </main>
 </div>
 <div class="footer">by:海边的飞行器 18520403199</div>
+<script>
+(function(){
+ var urls=[
+  'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
+  'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.3/tesseract.min.js'
+ ];
+ function load(i){
+  if(i>=urls.length){window.__ocrLoadError=true;return}
+  var s=document.createElement('script');
+  s.src=urls[i];
+  s.onload=function(){window.__ocrLoaded=true};
+  s.onerror=function(){load(i+1)};
+  document.head.appendChild(s);
+ }
+ load(0);
+})();
+</script>
 <script src="app.js"></script>
 </body>
 </html>

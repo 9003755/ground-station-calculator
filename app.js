@@ -48,8 +48,46 @@ bBtn.addEventListener('click',()=>{const ab=parseFloat(document.getElementById('
 
 const geoBtn=document.getElementById('geo-calc');
 geoBtn.addEventListener('click',()=>{const lat1=parseFloat(document.getElementById('geo-lat1').value);const lon1=parseFloat(document.getElementById('geo-lon1').value);const lat2=parseFloat(document.getElementById('geo-lat2').value);const lon2=parseFloat(document.getElementById('geo-lon2').value);if([lat1,lon1,lat2,lon2].some(v=>!isFinite(v)))return;const d=distanceMeters(lat1,lon1,lat2,lon2);const b1=bearingAB(lat1,lon1,lat2,lon2);const b2=bearingAB(lat2,lon2,lat1,lon1);document.getElementById('geo-dist').textContent=format2(d);document.getElementById('geo-bearing-ab').textContent=format2(b1);document.getElementById('geo-bearing-ba').textContent=format2(b2)});
+const geoClr=document.getElementById('geo-clear');
+if(geoClr){geoClr.addEventListener('click',()=>{document.getElementById('geo-lat1').value='';document.getElementById('geo-lon1').value='';document.getElementById('geo-lat2').value='';document.getElementById('geo-lon2').value='';})}
 function distanceMeters(lat1,lon1,lat2,lon2){const R=6371000;const r1=deg2rad(lat1),r2=deg2rad(lat2);const dlat=deg2rad(lat2-lat1),dlon=deg2rad(lon2-lon1);const a=Math.sin(dlat/2)**2+Math.cos(r1)*Math.cos(r2)*Math.sin(dlon/2)**2;const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c}
 function bearingAB(lat1,lon1,lat2,lon2){const r1=deg2rad(lat1),r2=deg2rad(lat2);const dlon=deg2rad(lon2-lon1);const y=Math.sin(dlon)*Math.cos(r2);const x=Math.cos(r1)*Math.sin(r2)-Math.sin(r1)*Math.cos(r2)*Math.cos(dlon);let br=rad2deg(Math.atan2(y,x));br=(br%360+360)%360;return br}
+
+const ocrArea=document.getElementById('ocr-area');
+const ocrOut=document.getElementById('ocr-output');
+function setDragState(s){if(!ocrArea)return;ocrArea.classList.toggle('drag',s)}
+function isFilledA(){const la=document.getElementById('geo-lat1').value;const lo=document.getElementById('geo-lon1').value;return isFinite(parseFloat(la))&&isFinite(parseFloat(lo))}
+function isFilledB(){const la=document.getElementById('geo-lat2').value;const lo=document.getElementById('geo-lon2').value;return isFinite(parseFloat(la))&&isFinite(parseFloat(lo))}
+function fillPairTo(target,p){if(target==='A'){document.getElementById('geo-lat1').value=Number.parseFloat(p.lat).toFixed(8);document.getElementById('geo-lon1').value=Number.parseFloat(p.lon).toFixed(8)}else{document.getElementById('geo-lat2').value=Number.parseFloat(p.lat).toFixed(8);document.getElementById('geo-lon2').value=Number.parseFloat(p.lon).toFixed(8)}}
+function fillAB(pairs){if(!pairs||pairs.length===0)return;const valid=pairs.filter(p=>isFinite(p.lat)&&isFinite(p.lon));if(valid.length===0)return;const aDone=isFilledA();const bDone=isFilledB();if(!aDone&&!bDone&&valid.length>=2){fillPairTo('A',valid[0]);fillPairTo('B',valid[1]);if(ocrOut)ocrOut.textContent='已填入A/B点，可直接计算';return}if(!aDone){fillPairTo('A',valid[0]);if(ocrOut)ocrOut.textContent='已填入A点，请继续粘贴B点图片';return}if(!bDone){fillPairTo('B',valid[0]);if(ocrOut)ocrOut.textContent='已填入B点，可直接计算';return}if(ocrOut)ocrOut.textContent='A/B点已完成，可直接计算'}
+function parseDMS(h, m, s, dir){let val=Number(h)+Number(m)/60+Number(s)/3600;if(dir==='S'||dir==='W')val=-val;return val}
+function parseTextToPairs(t){const pairs=[];let txt=String(t||'');txt=txt.replace(/[↔→←]/g,' ').replace(/\s+/g,' ').trim();let m;let reLabel1=/纬度[^\d-]*(-?\d+(?:\.\d+)?)[^\d-]*经度[^\d-]*(-?\d+(?:\.\d+)?)/gi;while((m=reLabel1.exec(txt))){pairs.push({lat:Number(m[1]),lon:Number(m[2])})}
+let reLabel2=/经度[^\d-]*(-?\d+(?:\.\d+)?)[^\d-]*纬度[^\d-]*(-?\d+(?:\.\d+)?)/gi;while((m=reLabel2.exec(txt))){pairs.push({lat:Number(m[2]),lon:Number(m[1])})}
+let lonSingles=[], latSingles=[];let reLon=/经度[^\d-]*(-?\d+(?:\.\d+)?)/gi;while((m=reLon.exec(txt))){lonSingles.push(Number(m[1]))}
+let reLat=/纬度[^\d-]*(-?\d+(?:\.\d+)?)/gi;while((m=reLat.exec(txt))){latSingles.push(Number(m[1]))}
+for(let i=0;i<Math.min(latSingles.length,lonSingles.length)&&pairs.length<2;i++){pairs.push({lat:latSingles[i],lon:lonSingles[i]})}
+const reCard=/([NS])\s*(\d+)\D+(\d+)\D+(\d+(?:\.\d+)?)\D*([EW])\s*(\d+)\D+(\d+)\D+(\d+(?:\.\d+)?)/gi;while((m=reCard.exec(txt))){pairs.push({lat:parseDMS(m[2],m[3],m[4],m[1]),lon:parseDMS(m[6],m[7],m[8],m[5])})}
+const reDec=/([NS]?)[^\d-]*(-?\d+(?:\.\d+)?)[^\d-]*[,;\s]+([EW]?)[^\d-]*(-?\d+(?:\.\d+)?)/gi;while((m=reDec.exec(txt))){let a=Number(m[2]);let b=Number(m[4]);let lat=a;let lon=b;if(!m[1]&&!m[3]){if(Math.abs(a)>90&&Math.abs(b)<=90){lon=a;lat=b}else if(Math.abs(a)<=90&&Math.abs(b)>90){lat=a;lon=b}else{continue}}else{if(m[1]==='S')lat=-Math.abs(lat);if(m[1]==='N')lat=Math.abs(lat);if(m[3]==='W')lon=-Math.abs(lon);if(m[3]==='E')lon=Math.abs(lon)}pairs.push({lat,lon})}
+if(pairs.length===0){const nums=(txt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number).filter(n=>Number.isFinite(n)&&Math.abs(n)<=180);let lat=null,lon=null;for(const n of nums){if(Math.abs(n)<=90){lat=n;break}}for(const n of nums){if(n!==lat&&Math.abs(n)<=180){lon=n;break}}if(lat!==null&&lon!==null){pairs.push({lat,lon})}}
+return pairs.filter(p=>isFinite(p.lat)&&isFinite(p.lon)).slice(0,2)
+}
+let ocrBusy=false;
+async function downscaleImage(blob){try{const bmp=await createImageBitmap(blob);const maxW=1000;const scale=Math.min(1,maxW/bmp.width);const w=Math.max(1,Math.floor(bmp.width*scale));const h=Math.max(1,Math.floor(bmp.height*scale));const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(bmp,0,0,w,h);return await new Promise(res=>c.toBlob(b=>res(b),'image/png',0.92))}catch{return blob}}
+async function recognizeOnce(image, lang){return await Tesseract.recognize(image,lang,{logger:m=>{if(m&&typeof m.progress==='number'){ocrOut.textContent='正在识别 '+Math.round(m.progress*100)+'%'}}})}
+async function recognizeFromBlob(blob){if(!window.Tesseract){ocrOut.textContent='无法加载OCR';return}if(ocrBusy)return;ocrBusy=true;ocrOut.textContent='正在识别 0%';const scaled=await downscaleImage(blob);const url=URL.createObjectURL(scaled);const mkTimeout=(ms)=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms));try{let r=await Promise.race([recognizeOnce(url,'eng'),mkTimeout(25000)]);let txt=r&&r.data&&r.data.text?r.data.text:'';let pairs=parseTextToPairs(txt||'');if(!pairs||pairs.length===0){r=await Promise.race([recognizeOnce(url,'eng+chi_sim'),mkTimeout(25000)]);txt=r&&r.data&&r.data.text?r.data.text:'';pairs=parseTextToPairs(txt||'')}
+if(pairs&&pairs.length>0){ocrOut.textContent='识别完成';fillAB(pairs)}else{ocrOut.textContent=txt?txt:'未识别到经纬度'}
+}catch(e){ocrOut.textContent='识别失败或超时'}finally{ocrBusy=false;URL.revokeObjectURL(url)}}
+if(ocrArea){ocrArea.addEventListener('paste',e=>{const items=e.clipboardData&&e.clipboardData.items?e.clipboardData.items:[];let found=false;for(const it of items){if(it.type&&it.type.startsWith('image/')){const f=it.getAsFile();recognizeFromBlob(f);found=true;break}}if(!found){ocrOut.textContent='剪贴板中没有图片'}});
+ocrArea.addEventListener('dragover',e=>{e.preventDefault();setDragState(true)});
+ocrArea.addEventListener('dragleave',()=>setDragState(false));
+ocrArea.addEventListener('drop',e=>{e.preventDefault();setDragState(false);const files=e.dataTransfer&&e.dataTransfer.files?e.dataTransfer.files:[];if(files.length>0){recognizeFromBlob(files[0])}})}
+if(ocrOut){
+  ocrOut.textContent='正在加载OCR...';
+  const t=setInterval(()=>{
+    if(window.__ocrLoaded||window.Tesseract){ocrOut.textContent='OCR已加载，可粘贴或拖拽图片';clearInterval(t)}
+    else if(window.__ocrLoadError){ocrOut.textContent='无法加载OCR，请检查网络'}
+  },500);
+}
 
 const sBtn=document.getElementById('speed-calc');
 sBtn.addEventListener('click',()=>{const v=parseFloat(document.getElementById('speed-value').value);const unit=document.getElementById('speed-unit').value;if(!isFinite(v))return;let kmh=0;if(unit==='kmh'||unit==='kmh2'){kmh=v}else if(unit==='ms'){kmh=v*3.6}else if(unit==='kmmin'){kmh=v*60}else{kmh=v*0.06}const ms=kmh/3.6;const kmmin=kmh/60;const mmin=ms*60;setSpeed(format2(kmh),format2(ms),format2(kmmin),format2(mmin))});
