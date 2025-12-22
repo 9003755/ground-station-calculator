@@ -37,7 +37,111 @@ function setTri(A,B,C,a,b,c){const fa=isFinite(A)?format6(A):A;const fb=isFinite
 const triAsaBtn=document.getElementById('tri-asa-calc');
 triAsaBtn.addEventListener('click',()=>{const A=parseFloat(document.getElementById('tri-A').value);const B=parseFloat(document.getElementById('tri-B').value);const known=parseFloat(document.getElementById('tri-known-side').value);const knownTag=document.querySelector('input[name="tri-known"]:checked').value;if(!isFinite(A)||!isFinite(B)||!isFinite(known))return;const C=180-(A+B);if(C<=0)return setTri('-', '-', '-', '-', '-', '-');const rA=deg2rad(A),rB=deg2rad(B),rC=deg2rad(C);let a,b,c;let k=0;if(knownTag==='a'){k=known/Math.sin(rA)}else if(knownTag==='b'){k=known/Math.sin(rB)}else{k=known/Math.sin(rC)}a=k*Math.sin(rA);b=k*Math.sin(rB);c=k*Math.sin(rC);setTri(A,B,C,a,b,c)});
 const triSasBtn=document.getElementById('tri-sas-calc');
-triSasBtn.addEventListener('click',()=>{const ang=parseFloat(document.getElementById('tri-sas-angle').value);const name=document.querySelector('input[name="tri-sas-angle-name"]:checked').value;const s1=parseFloat(document.getElementById('tri-sas-side1').value);const s2=parseFloat(document.getElementById('tri-sas-side2').value);if(!isFinite(ang)||!isFinite(s1)||!isFinite(s2))return;const r=deg2rad(ang);let a=NaN,b=NaN,c=NaN;let A=NaN,B=NaN,C=NaN;if(name==='A'){b=s1;c=s2;a=Math.sqrt(Math.max(0,b*b+c*c-2*b*c*Math.cos(r)));if(a===0)return;A=ang;B=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+c*c-b*b)/(2*a*c)))));C=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+b*b-c*c)/(2*a*b)))))}else if(name==='B'){a=s1;c=s2;b=Math.sqrt(Math.max(0,a*a+c*c-2*a*c*Math.cos(r)));if(b===0)return;B=ang;A=rad2deg(Math.acos(Math.min(1,Math.max(-1,(b*b+c*c-a*a)/(2*b*c)))));C=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+b*b-c*c)/(2*a*b)))))}else{a=s1;b=s2;c=Math.sqrt(Math.max(0,a*a+b*b-2*a*b*Math.cos(r)));if(c===0)return;C=ang;A=rad2deg(Math.acos(Math.min(1,Math.max(-1,(b*b+c*c-a*a)/(2*b*c)))));B=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+c*c-b*b)/(2*a*c)))))}setTri(A,B,C,a,b,c)});
+triSasBtn.addEventListener('click',()=>{
+  const ang=parseFloat(document.getElementById('tri-sas-angle').value);
+  const type=document.querySelector('input[name="tri-sas-angle-type"]:checked').value;
+  const s1=parseFloat(document.getElementById('tri-sas-side1').value);
+  const s2=parseFloat(document.getElementById('tri-sas-side2').value);
+  if(!isFinite(ang)||!isFinite(s1)||!isFinite(s2))return;
+  
+  let A=NaN,B=NaN,C=NaN;
+  let a=NaN,b=NaN,c=NaN;
+  const rAng=deg2rad(ang);
+
+  // 映射逻辑：
+  // 假设输出顺序总是 A, B, C 和 a, b, c
+  // 我们可以固定让 s1 对应 b，s2 对应 c (这是 SAS 时的传统做法，两边夹角为A)
+  // 但为了通用性，我们根据输入类型进行不同计算
+
+  if(type==='included') {
+    // 夹角模式 (SAS)
+    // 设夹角为 A，已知边为 b, c
+    A = ang;
+    b = s1;
+    c = s2;
+    // 余弦定理求 a
+    a = Math.sqrt(Math.max(0, b*b + c*c - 2*b*c*Math.cos(rAng)));
+    if(a <= 0) return setTri('-', '-', '-', '-', '-', '-');
+    
+    // 余弦定理求 B, C
+    B = rad2deg(Math.acos(Math.min(1, Math.max(-1, (a*a + c*c - b*b)/(2*a*c)))));
+    C = rad2deg(Math.acos(Math.min(1, Math.max(-1, (a*a + b*b - c*c)/(2*a*b)))));
+  } else if (type==='side1') {
+    // 边1对角模式 (SSA)
+    // 已知角为 A，边1为 a，边2为 b
+    // 即 a = s1, b = s2, A = ang
+    A = ang;
+    a = s1;
+    b = s2;
+    
+    // 正弦定理求 sinB = b * sinA / a
+    const sinB = b * Math.sin(rAng) / a;
+    
+    // 简单判断无解情况
+    if (sinB > 1) return setTri('无解', '-', '-', '-', '-', '-');
+    
+    // 计算 B 的主值
+    const B1 = Math.asin(sinB); // 弧度
+    const B1_deg = rad2deg(B1);
+    
+    // SSA 可能有两解，这里我们先取通常解（锐角或钝角需判断）
+    // 简单的单一解逻辑：
+    // 若 a >= b，只有一解 B1
+    // 若 a < b，可能有两解：B1 和 180-B1
+    
+    // 这里为简化显示，暂时只计算一种最常见的情况（锐角解），或者如果用户需要可以扩展显示多解
+    // 根据需求“自动算出另一条边和另外两个角”，我们尽量给出一个有效解。
+    
+    B = B1_deg;
+    C = 180 - A - B;
+    if (C <= 0) {
+      // 尝试钝角解
+      B = 180 - B1_deg;
+      C = 180 - A - B;
+      if (C <= 0) return setTri('无解', '-', '-', '-', '-', '-');
+    }
+    
+    // 正弦定理求 c
+    // c / sinC = a / sinA
+    c = a * Math.sin(deg2rad(C)) / Math.sin(rAng);
+    
+  } else {
+    // 边2对角模式 (SSA)
+    // 已知角为 A，边1为 b，边2为 a
+    // 即 a = s2, b = s1, A = ang
+    // 对称处理，交换 s1, s2 即可复用上面的逻辑
+    A = ang;
+    a = s2;
+    b = s1;
+    
+    const sinB = b * Math.sin(rAng) / a;
+    if (sinB > 1) return setTri('无解', '-', '-', '-', '-', '-');
+    
+    const B1 = Math.asin(sinB);
+    const B1_deg = rad2deg(B1);
+    
+    B = B1_deg;
+    C = 180 - A - B;
+    if (C <= 0) {
+      B = 180 - B1_deg;
+      C = 180 - A - B;
+      if (C <= 0) return setTri('无解', '-', '-', '-', '-', '-');
+    }
+    c = a * Math.sin(deg2rad(C)) / Math.sin(rAng);
+    
+    // 恢复原来的边对应关系显示
+    // 上面逻辑中，我们假设了 s2 是对边 a，s1 是邻边 b
+    // 输出时，tri-a 显示的是对边，tri-b 显示的是邻边
+    // 我们的 setTri 接口是 (A, B, C, a, b, c)
+    // 为了让用户理解，我们需要明确：
+    // 角A 是输入角，角B 是计算出的另一个角，角C 是第三个角
+    // 边a 是角A对边，边b 是角B对边，边c 是角C对边
+    // 在这个分支里：a 是 s2, b 是 s1。
+    // 所以调用 setTri 时，传入的 a 应该是 s2, b 应该是 s1。
+  }
+
+  setTri(A, B, C, a, b, c);
+});
 const triSssBtn=document.getElementById('tri-sss-calc');
 triSssBtn.addEventListener('click',()=>{const a=parseFloat(document.getElementById('tri-sss-a').value);const b=parseFloat(document.getElementById('tri-sss-b').value);const c=parseFloat(document.getElementById('tri-sss-c').value);if(!isFinite(a)||!isFinite(b)||!isFinite(c))return;if(a<=0||b<=0||c<=0)return;if(a+b<=c||a+c<=b||b+c<=a)return setTri('-', '-', '-', a,b,c);const A=rad2deg(Math.acos(Math.min(1,Math.max(-1,(b*b+c*c-a*a)/(2*b*c)))));const B=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+c*c-b*b)/(2*a*c)))));const C=rad2deg(Math.acos(Math.min(1,Math.max(-1,(a*a+b*b-c*c)/(2*a*b)))));setTri(A,B,C,a,b,c)});
 function deg2rad(d){return d*Math.PI/180}
