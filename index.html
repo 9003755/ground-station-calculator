@@ -100,11 +100,11 @@
         <label>已知角(°)<input type="number" id="tri-sas-angle" step="0.000001"></label>
         <div class="radio-group">
           <label><input type="radio" name="tri-sas-angle-type" value="included" checked> 两边夹角</label>
-          <label><input type="radio" name="tri-sas-angle-type" value="side1"> 边1对角</label>
-          <label><input type="radio" name="tri-sas-angle-type" value="side2"> 边2对角</label>
+          <label><input type="radio" name="tri-sas-angle-type" value="side1"> 边a对角</label>
+          <label><input type="radio" name="tri-sas-angle-type" value="side2"> 边b对角</label>
         </div>
-        <label>边1<input type="number" id="tri-sas-side1" step="0.000001"></label>
-        <label>边2<input type="number" id="tri-sas-side2" step="0.000001"></label>
+        <label id="tri-sas-label-s1">边b<input type="number" id="tri-sas-side1" step="0.000001"></label>
+        <label id="tri-sas-label-s2">边c<input type="number" id="tri-sas-side2" step="0.000001"></label>
         <button id="tri-sas-calc">计算</button>
       </div>
       <div id="tri-form-sss" class="form" style="display:none">

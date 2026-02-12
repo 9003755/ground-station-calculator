@@ -80,14 +80,17 @@ function updateTriVisual(){
     if(type==='included'){
        // 夹角 A -> 边 b, c
        highlight(['b','c']);
+       setSasLabels('b','c');
     } else if(type==='side1'){
        // 边1对角 (A是对角) -> 边1=a
        // 边2是邻边 -> 边2=b (或c, 这里假设b)
        highlight(['a','b']);
+       setSasLabels('a','b');
     } else {
        // 边2对角 (A是对角) -> 边2=a
        // 边1是邻边 -> 边1=b
-       highlight(['a','b']);
+       highlight(['a','b']); // 实际上这里是 a(s2) 和 b(s1)
+       setSasLabels('b','a');
     }
   }else if(activeTab==='sss'){
     const svg=document.querySelector('.tri-visual svg');
@@ -100,6 +103,12 @@ function updateTriVisual(){
     };
     highlight(['a','b','c']);
   }
+}
+function setSasLabels(l1,l2){
+  const lb1=document.getElementById('tri-sas-label-s1');
+  const lb2=document.getElementById('tri-sas-label-s2');
+  if(lb1 && lb1.childNodes.length > 0) lb1.childNodes[0].textContent='边'+l1;
+  if(lb2 && lb2.childNodes.length > 0) lb2.childNodes[0].textContent='边'+l2;
 }
 document.querySelectorAll('input[name="tri-known"], input[name="tri-sas-angle-type"]').forEach(r=>r.addEventListener('change',updateTriVisual));
 document.querySelectorAll('.tabbar .tab').forEach(t=>t.addEventListener('click',()=>{
