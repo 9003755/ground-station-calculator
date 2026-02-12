@@ -52,6 +52,30 @@
         <button class="tab" data-tri-tab="sas">两边及任意一角</button>
         <button class="tab" data-tri-tab="sss">已知三边解角</button>
       </div>
+      <div class="tri-visual">
+        <svg viewBox="0 0 300 200" width="100%">
+          <!-- 顶点 -->
+          <text x="20" y="180" class="label-vertex" data-id="A">A</text>
+          <text x="280" y="180" class="label-vertex" data-id="B">B</text>
+          <text x="150" y="30" class="label-vertex" data-id="C">C</text>
+          
+          <!-- 边 -->
+          <line x1="40" y1="170" x2="260" y2="170" class="edge" data-id="c" stroke="var(--border)" stroke-width="3"></line> <!-- c边 (AB) -->
+          <line x1="260" y1="170" x2="150" y2="40" class="edge" data-id="a" stroke="var(--border)" stroke-width="3"></line> <!-- a边 (BC) -->
+          <line x1="150" y1="40" x2="40" y2="170" class="edge" data-id="b" stroke="var(--border)" stroke-width="3"></line> <!-- b边 (AC) -->
+          
+          <!-- 角 -->
+          <path d="M 70 170 A 30 30 0 0 0 62 145" class="angle" data-id="A" fill="none" stroke="var(--muted)" stroke-width="2"></path>
+          <path d="M 230 170 A 30 30 0 0 1 238 145" class="angle" data-id="B" fill="none" stroke="var(--muted)" stroke-width="2"></path>
+          <path d="M 135 55 A 30 30 0 0 0 165 55" class="angle" data-id="C" fill="none" stroke="var(--muted)" stroke-width="2"></path>
+          
+          <!-- 边标签 -->
+          <text x="150" y="190" class="label-edge" data-id="c">c</text>
+          <text x="215" y="100" class="label-edge" data-id="a">a</text>
+          <text x="85" y="100" class="label-edge" data-id="b">b</text>
+        </svg>
+        <div class="tri-desc">请参照上图输入对应参数</div>
+      </div>
       <div id="tri-form-asa" class="form">
         <label>角A(°)<input type="number" id="tri-A" step="0.000001"></label>
         <label>角B(°)<input type="number" id="tri-B" step="0.000001"></label>

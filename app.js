@@ -32,7 +32,84 @@ function format2(x){if(Number.isNaN(x))return 'NaN';if(!Number.isFinite(x))retur
 function formatNum(x){return (/^-?\d+(\.\d+)?$/).test(String(x))?String(x):String(x)}
 function opSym(o){if(o==='*')return '×';if(o=== '/')return '÷';if(o==='-')return '−';return '+'}
 
-document.querySelectorAll('.tabbar .tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tabbar .tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const m=t.dataset.triTab;document.getElementById('tri-form-asa').style.display=m==='asa'?'flex':'none';document.getElementById('tri-form-sas').style.display=m==='sas'?'flex':'none';document.getElementById('tri-form-sss').style.display=m==='sss'?'flex':'none'}));
+  if(activeTab==='asa'){
+    // 两角夹一边 或 两角对一边?
+    // 当前ASA模式输入的是 角A, 角B, 已知边
+    // 我们的逻辑是 A, B 为已知角
+    // 边如果是 a (角A对边), b (角B对边), c (角C对边, 即夹边)
+    // 所以逻辑是对的：高亮 A, B, 以及选中的边
+    const svg=document.querySelector('.tri-visual svg');
+    svg.querySelectorAll('.active').forEach(e=>e.classList.remove('active'));
+    
+    // Helper to highlight elements by data-id
+    const highlight=(ids)=>{
+      ids.forEach(id=>{
+        // Highlight vertex/angle
+        const angle=svg.querySelector(`.angle[data-id="${id}"]`);
+        if(angle)angle.classList.add('active');
+        // Highlight edge
+        const edge=svg.querySelector(`.edge[data-id="${id}"]`);
+        if(edge)edge.classList.add('active');
+      });
+    };
+
+    highlight(['A','B']); // 两角 A, B
+    const k=document.querySelector('input[name="tri-known"]:checked').value;
+    // k is 'a', 'b', or 'c'
+    highlight([k]);
+  }else if(activeTab==='sas'){
+    const svg=document.querySelector('.tri-visual svg');
+    svg.querySelectorAll('.active').forEach(e=>e.classList.remove('active'));
+    
+    const highlight=(ids)=>{
+      ids.forEach(id=>{
+        const angle=svg.querySelector(`.angle[data-id="${id}"]`);
+        if(angle)angle.classList.add('active');
+        const edge=svg.querySelector(`.edge[data-id="${id}"]`);
+        if(edge)edge.classList.add('active');
+      });
+    };
+
+    const type=document.querySelector('input[name="tri-sas-angle-type"]:checked').value;
+    // 已知角固定为 A (在界面上显示为 已知角) -> 对应 SVG 中的 A
+    highlight(['A']); 
+    
+    if(type==='included'){
+       // 夹角 A -> 边 b, c
+       highlight(['b','c']);
+    } else if(type==='side1'){
+       // 边1对角 (A是对角) -> 边1=a
+       // 边2是邻边 -> 边2=b (或c, 这里假设b)
+       highlight(['a','b']);
+    } else {
+       // 边2对角 (A是对角) -> 边2=a
+       // 边1是邻边 -> 边1=b
+       highlight(['a','b']);
+    }
+  }else if(activeTab==='sss'){
+    const svg=document.querySelector('.tri-visual svg');
+    svg.querySelectorAll('.active').forEach(e=>e.classList.remove('active'));
+    const highlight=(ids)=>{
+      ids.forEach(id=>{
+        const edge=svg.querySelector(`.edge[data-id="${id}"]`);
+        if(edge)edge.classList.add('active');
+      });
+    };
+    highlight(['a','b','c']);
+  }
+}
+document.querySelectorAll('input[name="tri-known"], input[name="tri-sas-angle-type"]').forEach(r=>r.addEventListener('change',updateTriVisual));
+document.querySelectorAll('.tabbar .tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tabbar .tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const m=t.dataset.triTab;
+  document.getElementById('tri-form-asa').style.display=m==='asa'?'flex':'none';
+  document.getElementById('tri-form-sas').style.display=m==='sas'?'flex':'none';
+  document.getElementById('tri-form-sss').style.display=m==='sss'?'flex':'none';
+  updateTriVisual();
+}));
+// Initialize visual
+updateTriVisual();
 function setTri(A,B,C,a,b,c){const fa=isFinite(A)?format6(A):A;const fb=isFinite(B)?format6(B):B;const fc=isFinite(C)?format6(C):C;const sa=isFinite(a)?format6(a):a;const sb=isFinite(b)?format6(b):b;const sc=isFinite(c)?format6(c):c;document.getElementById('tri-out-A').textContent=fa;document.getElementById('tri-out-B').textContent=fb;document.getElementById('tri-C').textContent=fc;document.getElementById('tri-a').textContent=sa;document.getElementById('tri-b').textContent=sb;document.getElementById('tri-c').textContent=sc}
 const triAsaBtn=document.getElementById('tri-asa-calc');
 triAsaBtn.addEventListener('click',()=>{const A=parseFloat(document.getElementById('tri-A').value);const B=parseFloat(document.getElementById('tri-B').value);const known=parseFloat(document.getElementById('tri-known-side').value);const knownTag=document.querySelector('input[name="tri-known"]:checked').value;if(!isFinite(A)||!isFinite(B)||!isFinite(known))return;const C=180-(A+B);if(C<=0)return setTri('-', '-', '-', '-', '-', '-');const rA=deg2rad(A),rB=deg2rad(B),rC=deg2rad(C);let a,b,c;let k=0;if(knownTag==='a'){k=known/Math.sin(rA)}else if(knownTag==='b'){k=known/Math.sin(rB)}else{k=known/Math.sin(rC)}a=k*Math.sin(rA);b=k*Math.sin(rB);c=k*Math.sin(rC);setTri(A,B,C,a,b,c)});
