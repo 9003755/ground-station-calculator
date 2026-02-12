@@ -32,6 +32,9 @@ function format2(x){if(Number.isNaN(x))return 'NaN';if(!Number.isFinite(x))retur
 function formatNum(x){return (/^-?\d+(\.\d+)?$/).test(String(x))?String(x):String(x)}
 function opSym(o){if(o==='*')return '×';if(o=== '/')return '÷';if(o==='-')return '−';return '+'}
 
+function updateTriVisual(){
+  const t=document.querySelector('.tabbar .tab.active');
+  const activeTab=t?t.dataset.triTab:'asa';
   if(activeTab==='asa'){
     // 两角夹一边 或 两角对一边?
     // 当前ASA模式输入的是 角A, 角B, 已知边
