@@ -260,6 +260,12 @@ if(clockCalcBtn){
       diff = 360 - diff;
     }
     
+    // Update SVG Hands
+    const hourHand = document.getElementById('svg-hour-hand');
+    const minHand = document.getElementById('svg-minute-hand');
+    if(hourHand) hourHand.style.transform = `rotate(${angleH}deg)`;
+    if(minHand) minHand.style.transform = `rotate(${angleM}deg)`;
+    
     // Update UI
     document.getElementById('clock-h-angle').textContent = format2(angleH);
     document.getElementById('clock-m-angle').textContent = format2(angleM);

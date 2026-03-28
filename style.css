@@ -64,6 +64,9 @@ body{margin:0;background:linear-gradient(180deg,#ebfbfb 0%,#e6f7f7 100%);color:v
 .paste-area.active{border-color:var(--accent);box-shadow:0 0 0 3px #93e5e6;color:#0b6e6f}
 .ocr-output{font-size:14px;color:var(--muted)}
 .tri-visual{margin-bottom:12px;text-align:center;background:linear-gradient(#fbffff,#eefafa);border:1px solid var(--border);border-radius:12px;padding:12px}
+.clock-visual{margin-bottom:12px;text-align:center;background:linear-gradient(#fbffff,#eefafa);border:1px solid var(--border);border-radius:12px;padding:12px}
+.clock-visual svg{max-width:200px;display:block;margin:0 auto}
+#svg-hour-hand, #svg-minute-hand{transform-origin:100px 100px;transition:transform 0.5s cubic-bezier(0.4, 2.5, 0.55, 0.9)}
 .tri-visual svg{max-width:300px;display:block;margin:0 auto}
 .label-vertex{font-size:14px;fill:var(--text);font-weight:700}
 .label-edge{font-size:14px;fill:var(--muted);font-style:italic}
