@@ -12,6 +12,7 @@
   <aside class="nav">
     <button class="nav-item active" data-target="calc-basic">简易计算器</button>
     <button class="nav-item" data-target="calc-triangle">三角形计算器</button>
+    <button class="nav-item" data-target="calc-clock">时钟夹角计算器</button>
     <button class="nav-item" data-target="calc-bearing">航向角计算器</button>
     <button class="nav-item" data-target="calc-geo">任意两点间航向和距离计算器</button>
     <button class="nav-item" data-target="calc-speed">速度单位换算</button>
@@ -124,6 +125,21 @@
           <div>边b：<span id="tri-b">-</span></div>
           <div>边c：<span id="tri-c">-</span></div>
         </div>
+      </div>
+    </section>
+
+    <section id="calc-clock" class="view">
+      <div class="form">
+        <div class="grid-2">
+          <label>小时(0-23)<input type="number" id="clock-h" step="1" min="0" max="23"></label>
+          <label>分钟(0-59)<input type="number" id="clock-m" step="1" min="0" max="59"></label>
+        </div>
+        <button id="clock-calc">计算</button>
+      </div>
+      <div class="result">
+        <div>时针指向角度(°)：<span id="clock-h-angle">-</span></div>
+        <div>分针指向角度(°)：<span id="clock-m-angle">-</span></div>
+        <div>时针与分针夹角(°)：<span id="clock-diff-angle">-</span></div>
       </div>
     </section>
 

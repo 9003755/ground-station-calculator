@@ -239,6 +239,34 @@ function rad2deg(r){return r*180/Math.PI}
 const bBtn=document.getElementById('bearing-calc');
 bBtn.addEventListener('click',()=>{const ab=parseFloat(document.getElementById('bearing-ab').value);if(!isFinite(ab))return;const ba=((ab+180)%360+360)%360;document.getElementById('bearing-ba').textContent=format2(ba)});
 
+const clockCalcBtn=document.getElementById('clock-calc');
+if(clockCalcBtn){
+  clockCalcBtn.addEventListener('click', ()=>{
+    const hInput = parseFloat(document.getElementById('clock-h').value);
+    const mInput = parseFloat(document.getElementById('clock-m').value);
+    
+    if(!isFinite(hInput) || !isFinite(mInput)) return;
+    
+    // Normalize to 12-hour format for hour calculation
+    const h12 = hInput % 12;
+    
+    // Calculate angles
+    const angleH = 30 * h12 + 0.5 * mInput;
+    const angleM = 6 * mInput;
+    
+    // Calculate difference
+    let diff = Math.abs(angleH - angleM);
+    if(diff > 180) {
+      diff = 360 - diff;
+    }
+    
+    // Update UI
+    document.getElementById('clock-h-angle').textContent = format2(angleH);
+    document.getElementById('clock-m-angle').textContent = format2(angleM);
+    document.getElementById('clock-diff-angle').textContent = format2(diff);
+  });
+}
+
 const geoBtn=document.getElementById('geo-calc');
 geoBtn.addEventListener('click',()=>{const lat1=parseFloat(document.getElementById('geo-lat1').value);const lon1=parseFloat(document.getElementById('geo-lon1').value);const lat2=parseFloat(document.getElementById('geo-lat2').value);const lon2=parseFloat(document.getElementById('geo-lon2').value);if([lat1,lon1,lat2,lon2].some(v=>!isFinite(v)))return;const d=distanceMeters(lat1,lon1,lat2,lon2);const b1=bearingAB(lat1,lon1,lat2,lon2);const b2=bearingAB(lat2,lon2,lat1,lon1);document.getElementById('geo-dist').textContent=format2(d);document.getElementById('geo-bearing-ab').textContent=format2(b1);document.getElementById('geo-bearing-ba').textContent=format2(b2)});
 const geoClr=document.getElementById('geo-clear');
