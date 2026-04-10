@@ -273,6 +273,22 @@ if(clockCalcBtn){
   });
 }
 
+const windCalcBtn=document.getElementById('wind-calc');
+if(windCalcBtn){
+  windCalcBtn.addEventListener('click', ()=>{
+    const windDir = parseFloat(document.getElementById('wind-dir-select').value);
+    if(!isFinite(windDir)) return;
+    
+    // 逆风航向角 = 风向
+    const headAngle = windDir;
+    // 顺风航向角 = 风向 + 180 (需要 % 360，并且处理 0/360 的显示习惯)
+    let tailAngle = (windDir + 180) % 360;
+    
+    document.getElementById('wind-head-angle').textContent = format2(headAngle);
+    document.getElementById('wind-tail-angle').textContent = format2(tailAngle);
+  });
+}
+
 const geoBtn=document.getElementById('geo-calc');
 geoBtn.addEventListener('click',()=>{const lat1=parseFloat(document.getElementById('geo-lat1').value);const lon1=parseFloat(document.getElementById('geo-lon1').value);const lat2=parseFloat(document.getElementById('geo-lat2').value);const lon2=parseFloat(document.getElementById('geo-lon2').value);if([lat1,lon1,lat2,lon2].some(v=>!isFinite(v)))return;const d=distanceMeters(lat1,lon1,lat2,lon2);const b1=bearingAB(lat1,lon1,lat2,lon2);const b2=bearingAB(lat2,lon2,lat1,lon1);document.getElementById('geo-dist').textContent=format2(d);document.getElementById('geo-bearing-ab').textContent=format2(b1);document.getElementById('geo-bearing-ba').textContent=format2(b2)});
 const geoClr=document.getElementById('geo-clear');
