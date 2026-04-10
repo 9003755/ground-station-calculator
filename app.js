@@ -307,8 +307,36 @@ const windTypeMap = {
   180: "顺风", "-180": "顺风", 135: "正左后侧风", 90: "正左侧风", 45: "正左前侧风"
 };
 
+function syncEightVisual(offset) {
+  document.querySelectorAll('.wind-arrow, .wind-text').forEach(el => el.style.opacity = '0');
+  if (offset !== null) {
+    let targetOffset = offset === -180 ? 180 : offset;
+    document.querySelectorAll(`[data-offset="${targetOffset}"]`).forEach(el => el.style.opacity = '1');
+  }
+}
+
 const eightCalcBtn = document.getElementById('eight-calc');
 if(eightCalcBtn) {
+  const updateVisualFromSelects = () => {
+    const wVal = document.getElementById('eight-wind').value;
+    const hVal = document.getElementById('eight-heading').value;
+    const tVal = document.getElementById('eight-type').value;
+
+    let offset = null;
+    if (tVal !== "") {
+      offset = parseFloat(tVal);
+    } else if (wVal !== "" && hVal !== "") {
+      offset = (parseFloat(hVal) - parseFloat(wVal)) % 360;
+      if (offset > 180) offset -= 360;
+      if (offset <= -180) offset += 360;
+    }
+    syncEightVisual(offset);
+  };
+
+  document.getElementById('eight-wind').addEventListener('change', updateVisualFromSelects);
+  document.getElementById('eight-heading').addEventListener('change', updateVisualFromSelects);
+  document.getElementById('eight-type').addEventListener('change', updateVisualFromSelects);
+
   eightCalcBtn.addEventListener('click', () => {
     const wVal = document.getElementById('eight-wind').value;
     const hVal = document.getElementById('eight-heading').value;
@@ -347,6 +375,7 @@ if(eightCalcBtn) {
     }
 
     resEl.innerHTML = resultText;
+    updateVisualFromSelects();
   });
 }
 
