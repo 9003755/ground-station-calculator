@@ -295,6 +295,14 @@ if(windCalcBtn){
     
     document.getElementById('wind-head-angle').textContent = format2(headAngle);
     document.getElementById('wind-tail-angle').textContent = format2(tailAngle);
+    
+    // 侧风航向角计算
+    document.getElementById('wind-rf-angle').textContent = format2((windDir - 45 + 360) % 360);
+    document.getElementById('wind-lf-angle').textContent = format2((windDir + 45) % 360);
+    document.getElementById('wind-r-angle').textContent = format2((windDir - 90 + 360) % 360);
+    document.getElementById('wind-l-angle').textContent = format2((windDir + 90) % 360);
+    document.getElementById('wind-rb-angle').textContent = format2((windDir - 135 + 360) % 360);
+    document.getElementById('wind-lb-angle').textContent = format2((windDir + 135) % 360);
   });
 }
 
