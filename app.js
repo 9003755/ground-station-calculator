@@ -112,13 +112,22 @@ function setSasLabels(l1,l2){
 }
 document.querySelectorAll('input[name="tri-known"], input[name="tri-sas-angle-type"]').forEach(r=>r.addEventListener('change',updateTriVisual));
 document.querySelectorAll('.tabbar .tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tabbar .tab').forEach(x=>x.classList.remove('active'));
+  const isWind = t.dataset.windTab !== undefined;
+  const selector = isWind ? '.tabbar .tab[data-wind-tab]' : '.tabbar .tab[data-tri-tab]';
+  document.querySelectorAll(selector).forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
-  const m=t.dataset.triTab;
-  document.getElementById('tri-form-asa').style.display=m==='asa'?'flex':'none';
-  document.getElementById('tri-form-sas').style.display=m==='sas'?'flex':'none';
-  document.getElementById('tri-form-sss').style.display=m==='sss'?'flex':'none';
-  updateTriVisual();
+  
+  if(isWind) {
+    const m=t.dataset.windTab;
+    document.getElementById('wind-form-basic').style.display=m==='basic'?'block':'none';
+    document.getElementById('wind-form-eight').style.display=m==='eight'?'block':'none';
+  } else {
+    const m=t.dataset.triTab;
+    document.getElementById('tri-form-asa').style.display=m==='asa'?'flex':'none';
+    document.getElementById('tri-form-sas').style.display=m==='sas'?'flex':'none';
+    document.getElementById('tri-form-sss').style.display=m==='sss'?'flex':'none';
+    updateTriVisual();
+  }
 }));
 // Initialize visual
 updateTriVisual();
@@ -286,6 +295,58 @@ if(windCalcBtn){
     
     document.getElementById('wind-head-angle').textContent = format2(headAngle);
     document.getElementById('wind-tail-angle').textContent = format2(tailAngle);
+  });
+}
+
+const windDirMap = {
+  0: "北(N/0°)", 45: "东北(NE/45°)", 90: "东(E/90°)", 135: "东南(SE/135°)",
+  180: "南(S/180°)", 225: "西南(SW/225°)", 270: "西(W/270°)", 315: "西北(NW/315°)"
+};
+const windTypeMap = {
+  0: "逆风", "-45": "正右前侧风", "-90": "正右侧风", "-135": "正右后侧风",
+  180: "顺风", "-180": "顺风", 135: "正左后侧风", 90: "正左侧风", 45: "正左前侧风"
+};
+
+const eightCalcBtn = document.getElementById('eight-calc');
+if(eightCalcBtn) {
+  eightCalcBtn.addEventListener('click', () => {
+    const wVal = document.getElementById('eight-wind').value;
+    const hVal = document.getElementById('eight-heading').value;
+    const tVal = document.getElementById('eight-type').value;
+
+    const unknowns = [wVal, hVal, tVal].filter(x => x === "").length;
+    const resEl = document.getElementById('eight-result');
+
+    if(unknowns !== 1) {
+      resEl.innerHTML = '<span style="color:#ef4444">请确保输入两个已知条件，保留一个未知条件。</span>';
+      return;
+    }
+
+    let w = wVal !== "" ? parseFloat(wVal) : null;
+    let h = hVal !== "" ? parseFloat(hVal) : null;
+    let t = tVal !== "" ? parseFloat(tVal) : null;
+
+    let resultText = "";
+
+    if (t === null) {
+      let offset = (h - w) % 360;
+      if (offset > 180) offset -= 360;
+      if (offset <= -180) offset += 360;
+
+      if(windTypeMap[offset] !== undefined) {
+         resultText = `计算结果: 侧风条件为 <span style="color:var(--accent);font-weight:bold;font-size:18px">${windTypeMap[offset]}</span>`;
+      } else {
+         resultText = `计算结果: 相对角度偏差为 <span style="color:var(--accent);font-weight:bold;font-size:18px">${offset}°</span>`;
+      }
+    } else if (h === null) {
+      h = (w + t + 360) % 360;
+      resultText = `计算结果: 航向为 <span style="color:var(--accent);font-weight:bold;font-size:18px">${windDirMap[h] || h + '°'}</span>`;
+    } else if (w === null) {
+      w = (h - t + 360) % 360;
+      resultText = `计算结果: 风向为 <span style="color:var(--accent);font-weight:bold;font-size:18px">${windDirMap[w] || w + '°'}</span>`;
+    }
+
+    resEl.innerHTML = resultText;
   });
 }
 
