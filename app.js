@@ -253,32 +253,44 @@ if(clockCalcBtn){
   clockCalcBtn.addEventListener('click', ()=>{
     const hInput = parseFloat(document.getElementById('clock-h').value);
     const mInput = parseFloat(document.getElementById('clock-m').value);
+    let sInput = parseFloat(document.getElementById('clock-s').value);
     
     if(!isFinite(hInput) || !isFinite(mInput)) return;
+    if(!isFinite(sInput)) sInput = 0; // Default seconds to 0 if empty
     
     // Normalize to 12-hour format for hour calculation
     const h12 = hInput % 12;
     
     // Calculate angles
-    const angleH = 30 * h12 + 0.5 * mInput;
-    const angleM = 6 * mInput;
+    const angleS = 6 * sInput;
+    const angleM = 6 * mInput + 0.1 * sInput;
+    const angleH = 30 * h12 + 0.5 * mInput + (0.5 / 60) * sInput;
     
-    // Calculate difference
-    let diff = Math.abs(angleH - angleM);
-    if(diff > 180) {
-      diff = 360 - diff;
-    }
+    // Calculate differences
+    let diffHM = Math.abs(angleH - angleM);
+    if(diffHM > 180) diffHM = 360 - diffHM;
+    
+    let diffHS = Math.abs(angleH - angleS);
+    if(diffHS > 180) diffHS = 360 - diffHS;
+    
+    let diffMS = Math.abs(angleM - angleS);
+    if(diffMS > 180) diffMS = 360 - diffMS;
     
     // Update SVG Hands
     const hourHand = document.getElementById('svg-hour-hand');
     const minHand = document.getElementById('svg-minute-hand');
+    const secHand = document.getElementById('svg-second-hand');
     if(hourHand) hourHand.style.transform = `rotate(${angleH}deg)`;
     if(minHand) minHand.style.transform = `rotate(${angleM}deg)`;
+    if(secHand) secHand.style.transform = `rotate(${angleS}deg)`;
     
     // Update UI
     document.getElementById('clock-h-angle').textContent = format2(angleH);
     document.getElementById('clock-m-angle').textContent = format2(angleM);
-    document.getElementById('clock-diff-angle').textContent = format2(diff);
+    document.getElementById('clock-s-angle').textContent = format2(angleS);
+    document.getElementById('clock-diff-angle').textContent = format2(diffHM);
+    document.getElementById('clock-diff-hs-angle').textContent = format2(diffHS);
+    document.getElementById('clock-diff-ms-angle').textContent = format2(diffMS);
   });
 }
 

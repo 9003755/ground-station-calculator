@@ -195,22 +195,30 @@
             <line x1="100" y1="115" x2="100" y2="35" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"></line>
             <polygon points="98,35 102,35 100,25" fill="var(--accent)"></polygon>
           </g>
+          <!-- 秒针 -->
+          <g id="svg-second-hand">
+            <line x1="100" y1="120" x2="100" y2="20" stroke="#ef4444" stroke-width="2" stroke-linecap="round"></line>
+          </g>
           <!-- 中心点 -->
           <circle cx="100" cy="100" r="7" fill="var(--text)"></circle>
           <circle cx="100" cy="100" r="3" fill="white"></circle>
         </svg>
       </div>
       <div class="form">
-        <div class="grid-2">
+        <div class="grid-3">
           <label>小时(0-23)<input type="number" id="clock-h" step="1" min="0" max="23"></label>
           <label>分钟(0-59)<input type="number" id="clock-m" step="1" min="0" max="59"></label>
+          <label>秒钟(0-59)<input type="number" id="clock-s" step="1" min="0" max="59"></label>
         </div>
         <button id="clock-calc">计算</button>
       </div>
       <div class="result">
         <div>时针指向角度(°)：<span id="clock-h-angle">-</span></div>
         <div>分针指向角度(°)：<span id="clock-m-angle">-</span></div>
+        <div>秒针指向角度(°)：<span id="clock-s-angle">-</span></div>
         <div>时针与分针夹角(°)：<span id="clock-diff-angle">-</span></div>
+        <div>时针与秒针夹角(°)：<span id="clock-diff-hs-angle">-</span></div>
+        <div>分针与秒针夹角(°)：<span id="clock-diff-ms-angle">-</span></div>
       </div>
     </section>
 
